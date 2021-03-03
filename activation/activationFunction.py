@@ -26,7 +26,7 @@ def linear(x):
 
 def sigmoid(x, kwargs=None):
     value = float(1 / (1 + math.exp(x * -1)))
-    print(x, value)
+    # print(x, value)
     threshold = kwargs.get("threshold", None)
     if threshold == None:
         return value

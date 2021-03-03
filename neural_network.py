@@ -53,7 +53,11 @@ class Layer(InputLayer):
         # print((self.weight))
         # print(self.bias)
         if(len(self.weight) == 1):
-            self.result = np.matmul(self.input_value, self.weight.flatten())
+            print("flatten")
+            print(self.input_value)
+            print(self.weight.flatten())
+
+            self.result = np.matmul(self.input_value, self.weight.flatten()) + self.bias
         else:
             self.result = np.matmul(np.transpose(self.input_value), self.weight) + self.bias
         # print(self.result)
@@ -69,13 +73,13 @@ def main():
     layer = []
     layer.append(InputLayer([0.0, 0.0]))
     import math
-    layer.append(Layer([[20, -20], [20,-20]], [-10,30], sigmoid, threshold=0)) 
-    layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0)) 
+    layer.append(Layer([[20, -20], [20,-20]], [-10,30], sigmoid, threshold=0.1)) 
+    layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0.1)) 
     neural_network = NeuralNetwork()
     neural_network.base_layer = layer
     neural_network.solve()
-    # for x in neural_network.current_layer:
-    #     print(x.result)
+    for x in neural_network.current_layer:
+        print(x.result)
 
 if __name__ == "__main__":
     main()
