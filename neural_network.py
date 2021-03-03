@@ -15,7 +15,7 @@ class NeuralNetwork:
     def enqueue_layer(self, layer):
         self.base_layer.append(layer)
     
-    def deque_layer(self, layer):
+    def deque_layer(self):
         self.base_layer.pop(0)
     
     def solve(self):
@@ -59,15 +59,17 @@ class Layer(InputLayer):
 # driver test
 def main():  
     layer = []
-    layer.append(InputLayer([0.0, 0.0]))
+    layer.append(InputLayer([1.0, 0.0]))
     import math
-    layer.append(Layer([[20, -20], [20,-20]], [-10,30], sigmoid, threshold=0.1)) 
-    layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0.1)) 
+    layer.append(Layer([[20, -20], [20,-20]], [-10,30], relu, max_value=0.1)) 
+    layer.append(Layer([[20, 20]], [-30], relu,  max_value=0.1)) 
     neural_network = NeuralNetwork()
     neural_network.base_layer = layer
     neural_network.solve()
     for x in neural_network.current_layer:
         print(x.result)
-
+            
+    neural_network.deque_layer()
+    neural_network.base_layer.insert(0,InputLayer([0.0, 0.1]))
 if __name__ == "__main__":
     main()
