@@ -1,5 +1,9 @@
 import numpy as np
+from activation.activationFunction import linear, sigmoid, relu, softmax
 
+# For iterating per item in array. Except for linear function because single parameter is automate to iterate per item
+sigmoid = np.vectorize(sigmoid)
+relu = np.vectorize(relu)
 class NeuralNetwork:
     def __init__(self):
         self.base_layer = []
@@ -30,10 +34,10 @@ class InputLayer:
         pass
 
 class Layer(InputLayer):
-    def __init__(self, arr_weight, arr_bias, activation_function, arr_input = []):
+    def __init__(self, arr_weight, arr_vector, activation_function, arr_input = []):
         super().__init__(arr_input)
         self.weight = np.array(arr_weight)
-        self.bias = np.array(arr_bias)
+        self.vector = np.array(arr_vector)
         self.result = np.array([])
         self.activation_function = activation_function
     
@@ -41,7 +45,7 @@ class Layer(InputLayer):
         self.result = self.activation_function(self.result)
     
     def sigma(self):
-        self.result = np.matmul(np.transpose(self.input_value), self.weight) + self.bias
+        self.result = np.matmul(np.transpose(self.input_value), self.weight) + self.vector
     
     def compute(self):
         self.sigma()
@@ -52,8 +56,8 @@ def main():
     layer = []
     layer.append(InputLayer([0.05, 0.1]))
     import math
-    layer.append(Layer([[0.15, 0.2], [0.25, 0.3]], [0.35,0.35], lambda x:1/(1 + math.e**(-1 * x)))) # result from slide [0.5933, 0.5969] 
-    layer.append(Layer([[0.4, 0.45], [0.5, 0.55]], [0.6,0.6], lambda x:1/(1 + math.e**(-1 * x)))) # result from slide [0.7514, 0.7729]
+    layer.append(Layer([[0.15, 0.2], [0.25, 0.3]], [0.35,0.35], linear)) # result from slide [0.5933, 0.5969] 
+    layer.append(Layer([[0.4, 0.45], [0.5, 0.55]], [0.6,0.6], linear)) # result from slide [0.7514, 0.7729]
     neural_network = NeuralNetwork()
     neural_network.base_layer = layer
     neural_network.solve()
