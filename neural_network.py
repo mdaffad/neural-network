@@ -23,9 +23,6 @@ class NeuralNetwork:
         for idx in range(len(self.current_layer)):
             if idx != 0:
                 self.current_layer[idx].input_value = self.current_layer[idx-1].result
-                # print(self.current_layer[idx].input_value)
-
-            # print(idx)
             self.current_layer[idx].compute()
         
 class InputLayer:
@@ -49,24 +46,15 @@ class Layer(InputLayer):
         self.result = self.activation_function(self.result, self.kwargs)
         
     def sigma(self):
-        # print(self.input_value)
-        # print((self.weight))
-        # print(self.bias)
+        # case 1 Dimension
         if(len(self.weight) == 1):
-            print("flatten")
-            print(self.input_value)
-            print(self.weight.flatten())
-
             self.result = np.matmul(self.input_value, self.weight.flatten()) + self.bias
         else:
             self.result = np.matmul(np.transpose(self.input_value), self.weight) + self.bias
-        # print(self.result)
-        
         
     def compute(self):
         self.sigma()
         self.activate()
-        # print(self.result)
         
 # driver test
 def main():  
