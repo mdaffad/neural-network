@@ -27,7 +27,6 @@ def linear(x):
 def sigmoid(x, threshold=None):
     value = float(1 / (1 + math.exp(x * -1)))
     if threshold == None:
-        print(value)
         return value
     else:
         if value < threshold:
@@ -36,7 +35,6 @@ def sigmoid(x, threshold=None):
             return 1
 
 def relu(x, alpha=0.0, max_value=None, threshold=0):
-    print(x)
     if x < threshold:
         return max(x, x * alpha)
     else:
@@ -47,6 +45,4 @@ def relu(x, alpha=0.0, max_value=None, threshold=0):
 
 def softmax(arr):
     arr_exp = np.exp(arr)
-    print("enter softmax")
-    print(arr_exp)
     return arr_exp / arr_exp.sum()
