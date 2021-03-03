@@ -1,5 +1,4 @@
 import csv
-import pandas as pd
 
 
 def readData(filename="xor-data.csv"):
@@ -13,7 +12,7 @@ def readData(filename="xor-data.csv"):
     return data, target_class
 
 
-def readWeight(filename="xor-weight.csv"):
+def readWeight(filename):
     # with open("xor-weight.csv", newline="") as csvfile:
     #     reader = csv.DictReader(csvfile)
     #     for row in reader:
@@ -24,11 +23,35 @@ def readWeight(filename="xor-weight.csv"):
     #             row["to"],
     #             row["weight"],
     #         )
-    f = open("test.txt", "r")
+    f = open(filename, "r")
     f1 = f.readlines()
     activation = []
     bias = []
     weight = []
-    for x in f1:
-        splitted = x.strip('\n').split(' ')
+    allowed = ['relu', 'sigmoid', 'linear', 'softmax']
+
+    n_attr = int(f1[0])
+    line = 1
+    while (line < len(f1)):
+        splitted = f1[line].strip('\n').split(' ')
         print(splitted)
+        if (('relu' in splitted) or ('linear' in splitted) or ('sigmoid' in splitted) or ('softmax' in splitted)):
+            activation.append(splitted[1])
+
+            line += 1
+            splitted = f1[line].strip('\n').split(' ')
+
+            bias.append(list(map(int, splitted)))
+        else:
+            temp = []
+            count = 0
+            while (count < n_attr):
+                splitted = f1[line].strip('\n').split(' ')
+                temp.append(list(map(int, splitted)))
+                count += 1
+                line += 1
+            if (count == n_attr):
+                weight.append(temp)
+                line -= 1
+        line += 1
+    return activation, bias, weight

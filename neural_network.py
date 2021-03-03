@@ -69,14 +69,26 @@ class Layer(InputLayer):
 
 def main():
     data_training, target = readData()
+    activation, bias, weight = readWeight('model 1.txt')
     neural_network = NeuralNetwork()
     result = []
+    layer = []
+
+    for i in range(len(activation)):
+        if (activation[i] == 'sigmoid'):
+            act = sigmoid
+        elif (activation == 'linear'):
+            act = linear
+        elif (activation == 'relu'):
+            act = relu
+        elif (activation == 'softmax'):
+            act = softmax
+
+        layer.append(Layer(weight[i], bias[i], act, threshold=0.1))
+    # layer.append(Layer([[20, -20], [20, -20]], [-10, 30], sigmoid, threshold=0.1))
+    # layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0.1))
     for data in data_training:
-        layer = []
-        layer.append(InputLayer(data))
-        layer.append(Layer([[20, -20], [20, -20]],
-                           [-10, 30], sigmoid, threshold=0.1))
-        layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0.1))
+        layer.insert(0, InputLayer(data))
         neural_network.base_layer = layer
         neural_network.solve()
         for x in neural_network.current_layer:
@@ -93,7 +105,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # print(data)
     # print(target)
-    readWeight()
+    # readWeight()
