@@ -24,8 +24,10 @@ import numpy as np
 def linear(x):
     return x
 
-def sigmoid(x, threshold=None):
+def sigmoid(x, kwargs=None):
     value = float(1 / (1 + math.exp(x * -1)))
+    print(x, value)
+    threshold = kwargs.get("threshold", None)
     if threshold == None:
         return value
     else:
@@ -34,7 +36,10 @@ def sigmoid(x, threshold=None):
         else:
             return 1
 
-def relu(x, alpha=0.0, max_value=None, threshold=0):
+def relu(x, kwargs):
+    alpha = kwargs.get("alpha", 0.0)
+    max_value = kwargs.get("max_value", None)
+    threshold = kwargs.get("threshold", None)
     if x < threshold:
         return max(x, x * alpha)
     else:

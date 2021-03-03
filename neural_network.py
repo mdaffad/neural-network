@@ -20,10 +20,13 @@ class NeuralNetwork:
     
     def solve(self):
         self.current_layer = self.base_layer.copy()
-        for idx, layer in enumerate(self.current_layer):
+        for idx in range(len(self.current_layer)):
             if idx != 0:
-                layer.input_value = self.current_layer[idx-1].result
-            layer.compute()
+                self.current_layer[idx].input_value = self.current_layer[idx-1].result
+                # print(self.current_layer[idx].input_value)
+
+            # print(idx)
+            self.current_layer[idx].compute()
         
 class InputLayer:
     def __init__(self, arr = []):
@@ -34,35 +37,45 @@ class InputLayer:
         pass
 
 class Layer(InputLayer):
-    def __init__(self, arr_weight, arr_vector, activation_function, arr_input = []):
-        super().__init__(arr_input)
+    def __init__(self, arr_weight, arr_bias, activation_function, **kwargs):
+        super().__init__([])
         self.weight = np.array(arr_weight)
-        self.vector = np.array(arr_vector)
+        self.bias = np.array(arr_bias)
         self.result = np.array([])
         self.activation_function = activation_function
+        self.kwargs = kwargs
     
     def activate(self):
-        self.result = self.activation_function(self.result)
-    
+        self.result = self.activation_function(self.result, self.kwargs)
+        
     def sigma(self):
-        self.result = np.matmul(np.transpose(self.input_value), self.weight) + self.vector
-    
+        # print(self.input_value)
+        # print((self.weight))
+        # print(self.bias)
+        if(len(self.weight) == 1):
+            self.result = np.matmul(self.input_value, self.weight.flatten())
+        else:
+            self.result = np.matmul(np.transpose(self.input_value), self.weight) + self.bias
+        # print(self.result)
+        
+        
     def compute(self):
         self.sigma()
         self.activate()
-
+        # print(self.result)
+        
 # driver test
 def main():  
     layer = []
-    layer.append(InputLayer([0.05, 0.1]))
+    layer.append(InputLayer([0.0, 0.0]))
     import math
-    layer.append(Layer([[0.15, 0.2], [0.25, 0.3]], [0.35,0.35], linear)) # result from slide [0.5933, 0.5969] 
-    layer.append(Layer([[0.4, 0.45], [0.5, 0.55]], [0.6,0.6], linear)) # result from slide [0.7514, 0.7729]
+    layer.append(Layer([[20, -20], [20,-20]], [-10,30], sigmoid, threshold=0)) 
+    layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0)) 
     neural_network = NeuralNetwork()
     neural_network.base_layer = layer
     neural_network.solve()
-    for x in neural_network.current_layer:
-        print(x.result)
+    # for x in neural_network.current_layer:
+    #     print(x.result)
 
 if __name__ == "__main__":
     main()
