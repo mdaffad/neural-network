@@ -34,7 +34,7 @@ def sigmoid(x, kwargs=None):
             return 0
         else:
             return 1
-
+    
 def relu(x, kwargs):
     alpha = kwargs.get("alpha", 0.0)
     max_value = kwargs.get("max_value", None)

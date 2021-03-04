@@ -26,10 +26,14 @@ class NeuralNetwork:
     def solve(self):
         self.current_layer = self.base_layer.copy()
         for idx in range(len(self.current_layer)):
+            print("LAYER === " + str(idx))
             if idx != 0:
                 self.current_layer[idx].input_value = self.current_layer[idx-1].result
+            else:
+                print("input layer")
+                print(self.current_layer[idx].input_value)
             self.current_layer[idx].compute()
-
+            
 
 class InputLayer:
     def __init__(self, arr=[]):
@@ -58,10 +62,11 @@ class Layer(InputLayer):
             self.result = np.matmul(
                 self.input_value, self.weight.flatten()) + self.bias
             # print("masuk 1")
-            
+
         else:
             self.result = np.matmul(self.input_value, self.weight) + self.bias
-            
+        print("sigma")
+        print(self.result)
         
     def compute(self):
         self.sigma()
