@@ -19,6 +19,7 @@ class NeuralNetwork:
 
     def enqueue_layer(self, layer):
         self.base_layer.append(layer)
+
     def deque_layer(self):
         self.base_layer.pop(0)
 
@@ -47,7 +48,7 @@ class Layer(InputLayer):
         self.result = np.array([])
         self.activation_function = activation_function
         self.kwargs = kwargs
-        print(kwargs)
+
     def activate(self):
         self.result = self.activation_function(self.result, self.kwargs)
 
@@ -59,6 +60,12 @@ class Layer(InputLayer):
         else:
             self.result = np.matmul(np.transpose(
                 self.input_value), self.weight) + self.bias
+            print("transpose")
+            print(np.transpose(
+                self.input_value))
+            print("weight")
+            
+            print(self.weight)
 
     def compute(self):
         self.sigma()
@@ -68,12 +75,16 @@ class Layer(InputLayer):
 
 
 def main():
+    print('Feed Forward Neural Network : XOR')
+    print("=================================")
+
     data_training, target = readData()
     activation, bias, weight = readWeight('model 1.txt')
     neural_network = NeuralNetwork()
     result = []
     layer = []
 
+    print("Activation \t: ", end="")
     for i in range(len(activation)):
         act = None
         if (activation[i] == 'sigmoid'):
@@ -84,26 +95,24 @@ def main():
             act = relu
         elif (activation[i] == 'softmax'):
             act = softmax
-        layer.append(Layer(weight[i], bias[i], act))
+        print(activation[i], end=" ")
+        layer.append(Layer(weight[i], bias[i], act, threshold=0.1))
+    print("")
     # layer.append(Layer([[20, -20], [20, -20]], [-10, 30], sigmoid, threshold=0.1))
     # layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0.1))
     for data in data_training:
         layer.insert(0, InputLayer(data))
         neural_network.base_layer = layer
         neural_network.solve()
-        for x in neural_network.current_layer:
-            print("result")
-            print(x.result)
         result.append(neural_network.current_layer[-1].result)
         neural_network.deque_layer()
-    for x in result:
-        print(result)
-    # print(target)
-    # print(result)
-    # if (result == target):
-    #     print("memang mantap")
-    # else:
-    #     print("kek tolol")
+    print("Target Class \t: ", target)
+    print("Predict Class \t: ", result)
+    print("=================================")
+    if (result == target):
+        print("Result : Good Predict")
+    else:
+        print("Result : Wrong Predict")
 
 
 if __name__ == "__main__":
