@@ -69,10 +69,11 @@ class Layer(InputLayer):
         print(self.result)
         
     def compute(self):
-        self.sigma()
-        self.activate()
         print("input")
         print(self.input_value)
+        self.sigma()
+        self.activate()
+        
         
         print("weight")
         print(self.weight)
