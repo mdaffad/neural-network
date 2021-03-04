@@ -3,8 +3,24 @@ input,x0,hidden1,h1,-10
 input,x0,hidden1,h2,-30
 input,x1,hidden1,h1,20
 input,x1,hidden1,h2,-20
-input,x2,hidden1,h2,20
+input,x2,hidden1,h1,20
 input,x2,hidden1,h2,-20
 hidden1,x0,output,y,-30
 hidden1,h1,output,y,20
 hidden1,h2,output,y,20
+
+0,relu,
+
+layer,activation,weight
+input,sigmoid,
+
+1 relu
+2
+-10 -30
+20 -20
+20 -20
+2 linear
+1
+-30
+20
+20
