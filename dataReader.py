@@ -13,16 +13,6 @@ def readData(filename="xor-data.csv"):
 
 
 def readWeight(filename):
-    # with open("xor-weight.csv", newline="") as csvfile:
-    #     reader = csv.DictReader(csvfile)
-    #     for row in reader:
-    #         print(
-    #             row["layerFrom"],
-    #             row["from"],
-    #             row["layerTo"],
-    #             row["to"],
-    #             row["weight"],
-    #         )
     f = open(filename, "r")
     f1 = f.readlines()
     activation = []
@@ -34,7 +24,6 @@ def readWeight(filename):
     line = 1
     while (line < len(f1)):
         splitted = f1[line].strip('\n').split(' ')
-        print(splitted)
         if (('relu' in splitted) or ('linear' in splitted) or ('sigmoid' in splitted) or ('softmax' in splitted)):
             activation.append(splitted[1])
 
