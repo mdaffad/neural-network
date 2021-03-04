@@ -37,7 +37,7 @@ def sigmoid(x, kwargs=None):
 
 def relu(x, kwargs):
     alpha = kwargs.get("alpha", 0.0)
-    max_value = kwargs.get("max_value", 1.0)
+    max_value = kwargs.get("max_value", None)
     threshold = kwargs.get("threshold", 0.0)
     if x < threshold:
         return max(x, x * alpha)

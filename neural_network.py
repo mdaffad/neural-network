@@ -54,23 +54,33 @@ class Layer(InputLayer):
 
     def sigma(self):
         # case 1 Dimension
-        if(len(self.weight) == 1):
+        if(len(self.weight[0]) == 1):
             self.result = np.matmul(
                 self.input_value, self.weight.flatten()) + self.bias
-        else:
-            self.result = np.matmul(np.transpose(
-                self.input_value), self.weight) + self.bias
-            print("transpose")
-            print(np.transpose(
-                self.input_value))
-            print("weight")
+            # print("masuk 1")
             
-            print(self.weight)
-
+        else:
+            self.result = np.matmul(self.input_value, self.weight) + self.bias
+            
+        
     def compute(self):
         self.sigma()
         self.activate()
-
+        print("input")
+        print(self.input_value)
+        
+        print("weight")
+        print(self.weight)
+        print("result")
+        print(self.result)
+        # print("transpose")
+        # print(np.transpose(
+        #     self.input_value))
+        # print("weight")
+        
+        # print(self.weight)
+        # print("result")
+        # print(self.result)
 # driver test
 
 
@@ -79,7 +89,7 @@ def main():
     print("=================================")
 
     data_training, target = readData()
-    activation, bias, weight = readWeight('model 1.txt')
+    activation, bias, weight = readWeight('model 2.txt')
     neural_network = NeuralNetwork()
     result = []
     layer = []
