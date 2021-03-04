@@ -21,7 +21,7 @@ import numpy as np
 #         else:
 #             self.sigma = sum(vector)
 
-def linear(x):
+def linear(x, kwargs=None):
     return x
 
 def sigmoid(x, kwargs=None):

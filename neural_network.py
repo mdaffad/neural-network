@@ -4,6 +4,7 @@ from activation.activationFunction import linear, sigmoid, relu, softmax
 from dataReader import *
 
 # For iterating per item in array. Except for linear function because single parameter is automate to iterate per item
+linear = np.vectorize(linear)
 sigmoid = np.vectorize(sigmoid)
 relu = np.vectorize(relu)
 
@@ -46,7 +47,7 @@ class Layer(InputLayer):
         self.result = np.array([])
         self.activation_function = activation_function
         self.kwargs = kwargs
-
+        print(kwargs)
     def activate(self):
         self.result = self.activation_function(self.result, self.kwargs)
 
@@ -74,16 +75,16 @@ def main():
     layer = []
 
     for i in range(len(activation)):
+        act = None
         if (activation[i] == 'sigmoid'):
             act = sigmoid
-        elif (activation == 'linear'):
+        elif (activation[i] == 'linear'):
             act = linear
-        elif (activation == 'relu'):
+        elif (activation[i] == 'relu'):
             act = relu
-        elif (activation == 'softmax'):
+        elif (activation[i] == 'softmax'):
             act = softmax
-
-        layer.append(Layer(weight[i], bias[i], act, threshold=0.1))
+        layer.append(Layer(weight[i], bias[i], act))
     # layer.append(Layer([[20, -20], [20, -20]], [-10, 30], sigmoid, threshold=0.1))
     # layer.append(Layer([[20, 20]], [-30], sigmoid,  threshold=0.1))
     for data in data_training:
@@ -91,10 +92,12 @@ def main():
         neural_network.base_layer = layer
         neural_network.solve()
         for x in neural_network.current_layer:
+            print("result")
             print(x.result)
         result.append(neural_network.current_layer[-1].result)
         neural_network.deque_layer()
-
+    for x in result:
+        print(result)
     # print(target)
     # print(result)
     # if (result == target):
