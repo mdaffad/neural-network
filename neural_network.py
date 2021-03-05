@@ -95,7 +95,7 @@ def main():
     print("=================================")
 
     data_training, target = readData()
-    activation, bias, weight = readWeight('model 2.txt')
+    activation, bias, weight = readWeight('model 1.txt')
     neural_network = NeuralNetwork()
     result = []
     layer = []
@@ -130,11 +130,11 @@ def main():
     else:
         print("Result : Wrong Predict")
     from graphviz import Digraph
-    f = Digraph('Feed Forward Neural Network', filename='ann.gv')
+    f = Digraph('Feed Forward Neural Network', filename='ann1.gv')
     f.attr('node', shape='circle', fixedsize='true', width='0.9')
 
     for i in range(len(neural_network.current_layer)):
-        if i !=0:
+        if i != 0:
             if i == 1:
                 print(neural_network.current_layer[i].weight)
                 print(neural_network.current_layer[i].bias)
@@ -144,12 +144,14 @@ def main():
                         print(f'x{j}')
                         print(neural_network.current_layer[i].weight[j][k])
                         print(f'h{i}_{k}')
-                        f.edge(f'x{j}', f'h{i}_{k}', str(neural_network.current_layer[i].weight[j][k]))
+                        f.edge(f'x{j}', f'h{i}_{k}', str(
+                            neural_network.current_layer[i].weight[j][k]))
                 for j in range(len(neural_network.current_layer[i].bias)):
                     print(f'bx')
                     print(neural_network.current_layer[i].bias[j])
                     print(f'h{i}_{j}')
-                    f.edge(f'bx', f'h{i}_{j}', str(neural_network.current_layer[i].bias[j]))
+                    f.edge(f'bx', f'h{i}_{j}', str(
+                        neural_network.current_layer[i].bias[j]))
             else:
                 print(neural_network.current_layer[i].weight)
                 for j in range(len(neural_network.current_layer[i].weight)):
@@ -157,14 +159,17 @@ def main():
                         print(f'h{i-1}_{j}')
                         print(neural_network.current_layer[i].weight[j][k])
                         print(f'h{i}_{k}')
-                        f.edge(f'h{i-1}_{j}', f'h{i}_{k}', str(neural_network.current_layer[i].weight[j][k]))
+                        f.edge(f'h{i-1}_{j}', f'h{i}_{k}',
+                               str(neural_network.current_layer[i].weight[j][k]))
                 for j in range(len(neural_network.current_layer[i].bias)):
                     print(f'bhx{i-1}')
                     print(neural_network.current_layer[i].bias[j])
                     print(f'h{i}_{j}')
-                    f.edge(f'bhx{i-1}', f'h{i}_{j}', str(neural_network.current_layer[i].bias[j]))
+                    f.edge(f'bhx{i-1}', f'h{i}_{j}',
+                           str(neural_network.current_layer[i].bias[j]))
 
     f.view()
+
 
 if __name__ == "__main__":
     main()
