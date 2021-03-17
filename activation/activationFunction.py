@@ -50,3 +50,37 @@ def relu(x, kwargs):
 def softmax(arr):
     arr_exp = np.exp(arr)
     return arr_exp / arr_exp.sum()
+
+def lossDerivative(targetj, oj):
+    return oj-targetj
+
+def lossFunction(targetj, oj, lenOutput=1):
+    loss = 0
+    if lenOutput>1:
+        for i in range(len(targetj)):
+            loss += (targetj[i]-oj[i]) * (targetj[i]-oj[i])
+    else:
+        loss += (targetj-oj) * (targetj-oj)
+    return loss/2
+
+def lossSoftmax(pk):
+    return -1*math.log(pk)
+
+def reluDerivative(x):
+    if x<0:
+        return 0
+    else:
+        return 1
+
+def sigmoidDerivative(x):
+    return sigmoid(x)*(1 - sigmoid(x))
+
+def softmaxDerivative(pj, targetClass=False):
+    if not targetClass:
+        return pj
+    else:
+        return -1*(1-pj)
+
+if __name__ =="__main__":
+    print(lossFunction(1,2))
+    print(lossFunction([1,2],[2,3], 2))
