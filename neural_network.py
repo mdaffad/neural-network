@@ -13,6 +13,8 @@ class NeuralNetwork:
     def __init__(self):
         self.base_layer = []
         self.current_layer = []
+        self.threshold = 0.001
+        self.maximum_iter = 100
 
     def get_total_layer(self):
         return len(self.layer)
@@ -23,7 +25,7 @@ class NeuralNetwork:
     def deque_layer(self):
         self.base_layer.pop(0)
 
-    def solve(self):
+    def forward_propagation(self):
         self.current_layer = self.base_layer.copy()
         for idx in range(len(self.current_layer)):
             print("")
@@ -78,11 +80,20 @@ class NeuralNetwork:
     
 
     def back_propagation(self):
-        for layer in self.current_layer:
-            layer.weight = layer.update_weight()
-            layer.bias = layer.update_bias()
-        # pass
+        for i in range(len(self.current_layer)):
+            if i != len(self.current_layer) - 1 and i != 0: #Not input or output layer
+                self.current_layer[i].weight = layer.update_weight()
+                self.current_layer[i].bias = layer.update_bias()
+            elif i != 0:
+                self.current_layer[i].weight = layer.update_weight_output()
 
+    def learn(self):
+        error = 0 # placeholder
+        current_iter = 0
+        while error > self.threshold and current_iter < self.maximum_iter:
+            self.forward_propagation()
+            self.back_propagation()
+        
 class InputLayer:
     def __init__(self, arr=[]):
         self.input_value = np.array(arr)
@@ -91,7 +102,7 @@ class InputLayer:
     def compute(self):
         pass
 
-
+import * from chainRule
 class Layer(InputLayer):
     def __init__(self, arr_weight, arr_bias, activation_function, **kwargs):
         super().__init__([])
@@ -120,11 +131,15 @@ class Layer(InputLayer):
         print("Weight \t: ", self.weight)
         print("Result \t: ", self.result)
     
-    def update_weight(self):
+    def update_weight(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i):
         pass
     
-    def update_bias(self):
+    def update_weight_output(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i):
         pass
+
+    def update_bias(self, target, out_h, out_o):
+        pass
+
 # driver test
 
 
@@ -155,7 +170,7 @@ def main():
     for data in data_training:
         layer.insert(0, InputLayer(data))
         neural_network.base_layer = layer
-        neural_network.solve()
+        neural_network.forward_propagation()
         result.append(neural_network.current_layer[-1].result)
         neural_network.deque_layer()
     print("Target Class \t: ", target)
