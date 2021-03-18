@@ -17,8 +17,11 @@ def chainRuleHidden (arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vecto
         sum_Output += result
     return sum_Output * out_h * ( 1 - out_h ) * vector_i
 
-# def chainSoftMax () :
-#     return 
+def chainSoftMax (target, j, probJ, out_h) :
+    if (target == j):
+        return -( 1 - probJ ) * out_h
+    else:
+        return probJ * out_h
 
 arr_target = [0.01, 0.99]
 arr_out_o = [0.7514, 0.7729]
