@@ -19,15 +19,15 @@ def chainRuleHidden (arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vecto
 
 # def chainSoftMax () :
 #     return 
+if __name__ == "__main__":
+    arr_target = [0.01, 0.99]
+    arr_out_o = [0.7514, 0.7729]
+    out_h = 0.5933
+    vector_i = 0.05
+    arr_hiddenLayer_weight = [0.4, 0.5]
 
-arr_target = [0.01, 0.99]
-arr_out_o = [0.7514, 0.7729]
-out_h = 0.5933
-vector_i = 0.05
-arr_hiddenLayer_weight = [0.4, 0.5]
+    tes = chainRuleOutput2(arr_target[0], out_h, arr_out_o[0])
+    print(tes)
 
-tes = chainRuleOutput2(arr_target[0], out_h, arr_out_o[0])
-print(tes)
-
-tes2 = chainRuleHidden(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i)
-print(tes2)
+    tes2 = chainRuleHidden(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i)
+    print(tes2)
