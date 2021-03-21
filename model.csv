@@ -1,0 +1,4 @@
+neuron,activation
+4,relu
+2,relu
+3,sigmoid

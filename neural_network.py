@@ -82,10 +82,10 @@ class NeuralNetwork:
     def back_propagation(self):
         for i in range(len(self.current_layer)):
             if i != len(self.current_layer) - 1 and i != 0: #Not input or output layer
-                self.current_layer[i].weight = layer.update_weight()
-                self.current_layer[i].bias = layer.update_bias()
+                self.current_layer[i].weight = self.current_layer[i].update_weight()
+                self.current_layer[i].bias = self.current_layer[i].update_bias()
             elif i != 0:
-                self.current_layer[i].weight = layer.update_weight_output()
+                self.current_layer[i].weight = self.current_layer[i].update_weight_output()
 
     def learn(self):
         error = 0 # placeholder
@@ -102,7 +102,7 @@ class InputLayer:
     def compute(self):
         pass
 
-import * from chainRule
+from chainRule import *
 class Layer(InputLayer):
     def __init__(self, arr_weight, arr_bias, activation_function, **kwargs):
         super().__init__([])
