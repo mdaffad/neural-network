@@ -1,8 +1,9 @@
 import numpy as np
 import math
 from activation.activationFunction import linear, sigmoid, relu, softmax
-from dataReader import *
-
+from parameter_reader import read_parameter
+from csv_reader import read_model, read_data
+import random
 # For iterating per item in array. Except for linear function because single parameter is automate to iterate per item
 linear = np.vectorize(linear)
 sigmoid = np.vectorize(sigmoid)
@@ -27,12 +28,14 @@ class NeuralNetwork:
 
     def forward_propagation(self):
         self.current_layer = self.base_layer.copy()
+        print(self.current_layer)
         for idx in range(len(self.current_layer)):
             print("")
             print("LAYER === " + str(idx))
             if idx != 0:
                 self.current_layer[idx].input_value = self.current_layer[idx-1].result
             else:
+                print(type(self.current_layer[idx].input_value))
                 print("Input layer \t:", self.current_layer[idx].input_value)
             self.current_layer[idx].compute()
 
@@ -104,10 +107,10 @@ class InputLayer:
 
 from chainRule import *
 class Layer(InputLayer):
-    def __init__(self, arr_weight, arr_bias, activation_function, **kwargs):
+    def __init__(self, neuron, activation_function, **kwargs):
         super().__init__([])
-        self.weight = np.array(arr_weight)
-        self.bias = np.array(arr_bias)
+        self.weight = np.array([[random.random() for x in range(neuron)] for j in range(neuron)])
+        self.bias = np.array([random.random() for x in range(neuron)])
         self.result = np.array([])
         self.activation_function = activation_function
         self.kwargs = kwargs
@@ -141,8 +144,8 @@ class Layer(InputLayer):
         pass
     
 class OutputLayer(Layer):
-    def __init__(self, arr_weight, arr_bias, activation_function, **kwargs):
-        super().__init__(arr_weight, arr_bias, activation_function, **kwargs)
+    def __init__(self, neuron, activation_function, **kwargs):
+        super().__init__(neuron, activation_function, **kwargs)
         self.error([])
 
 # driver test
@@ -152,39 +155,41 @@ def main():
     print('Feed Forward Neural Network : XOR')
     print("=================================")
 
-    data_training, target = readData()
-    activation, bias, weight = readWeight('model 1.txt')
+    parameter = read_parameter()
+    data = read_data()
+    model = read_model()
     neural_network = NeuralNetwork()
     result = []
     layer = []
 
-    print("Activation \t: ", end="")
-    for i in range(len(activation)):
+    print("Activation Layer: ")
+    for index, item in model.iterrows():
         act = None
-        if (activation[i] == 'sigmoid'):
+        if (item['activation'] == 'sigmoid'):
             act = sigmoid
-        elif (activation[i] == 'linear'):
+        elif (item['activation'] == 'linear'):
             act = linear
-        elif (activation[i] == 'relu'):
+        elif (item['activation'] == 'relu'):
             act = relu
-        elif (activation[i] == 'softmax'):
+        elif (item['activation'] == 'softmax'):
             act = softmax
-        print(activation[i], end=" ")
-        layer.append(Layer(weight[i], bias[i], act, threshold=0.1))
+        print(index, " ", item['activation'])
+        layer.append(Layer(item['neuron'], act, threshold=0.1))
+        print(layer[-1].input_value)
     print("")
-    for data in data_training:
-        layer.insert(0, InputLayer(data))
+    for item in data:
+        layer.insert(0, InputLayer(item))
         neural_network.base_layer = layer
         neural_network.forward_propagation()
         result.append(neural_network.current_layer[-1].result)
         neural_network.deque_layer()
-    print("Target Class \t: ", target)
+    # print("Target Class \t: ", target)
     print("Predict Class \t: ", result)
     print("=================================")
-    if (result == target):
-        print("Result : Good Predict")
-    else:
-        print("Result : Wrong Predict")
+    # if (result == target):
+    #     print("Result : Good Predict")
+    # else:
+    #     print("Result : Wrong Predict")
     
     neural_network.draw()
 
