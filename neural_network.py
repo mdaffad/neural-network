@@ -13,23 +13,24 @@ relu = np.vectorize(relu)
 
 
 class NeuralNetwork:
-    def __init__(self):
-        self.base_layer = []
-        self.current_layer = []
-        self.threshold = 0.001
-        self.maximum_iter = 100
+    def __init__(self, base_layer, learning_rate = 0.001, error_threshold = 0.001, max_iter = 100, batch_size = 1):
+        self.base_layer = base_layer
+        self.current_layer = base_layer.copy()
+        self.learning_rate = learning_rate
+        self.error_threshold = error_threshold
+        self.max_iter = max_iter
+        self.batch_size = batch_size
 
     def get_total_layer(self):
         return len(self.layer)
 
     def enqueue_layer(self, layer):
-        self.base_layer.append(layer)
+        self.current_layer.append(layer)
 
     def deque_layer(self):
-        self.base_layer.pop(0)
+        self.current_layer.pop(0)
 
     def forward_propagation(self):
-        self.current_layer = self.base_layer.copy()
         for idx in range(len(self.current_layer)):
             print("")
             print("LAYER === " + str(idx))
@@ -48,35 +49,35 @@ class NeuralNetwork:
         for i in range(len(self.current_layer)):
             if i != 0:
                 if i == 1:
-                    print(self.current_layer[i].weight)
-                    print(self.current_layer[i].bias)
+                    # print(self.current_layer[i].weight)
+                    # print(self.current_layer[i].bias)
                     for j in range(len(self.current_layer[i].weight)):
                         # f.edge("x{i}","hidden{i}")
                         for k in range(len(self.current_layer[i].weight[j])):
-                            print(f'x{j}')
-                            print(self.current_layer[i].weight[j][k])
-                            print(f'h{i}_{k}')
+                            # print(f'x{j}')
+                            # print(self.current_layer[i].weight[j][k])
+                            # print(f'h{i}_{k}')
                             f.edge(f'x{j}', f'h{i}_{k}', str(
                                 self.current_layer[i].weight[j][k]))
                     for j in range(len(self.current_layer[i].bias)):
-                        print(f'bx')
-                        print(self.current_layer[i].bias[j])
-                        print(f'h{i}_{j}')
+                        # print(f'bx')
+                        # print(self.current_layer[i].bias[j])
+                        # print(f'h{i}_{j}')
                         f.edge(f'bx', f'h{i}_{j}', str(
                             self.current_layer[i].bias[j]))
                 else:
-                    print(self.current_layer[i].weight)
+                    # print(self.current_layer[i].weight)
                     for j in range(len(self.current_layer[i].weight)):
                         for k in range(len(self.current_layer[i].weight[j])):
-                            print(f'h{i-1}_{j}')
-                            print(self.current_layer[i].weight[j][k])
-                            print(f'h{i}_{k}')
+                            # print(f'h{i-1}_{j}')
+                            # print(self.current_layer[i].weight[j][k])
+                            # print(f'h{i}_{k}')
                             f.edge(f'h{i-1}_{j}', f'h{i}_{k}',
                                 str(self.current_layer[i].weight[j][k]))
                     for j in range(len(self.current_layer[i].bias)):
-                        print(f'bhx{i-1}')
-                        print(self.current_layer[i].bias[j])
-                        print(f'h{i}_{j}')
+                        # print(f'bhx{i-1}')
+                        # print(self.current_layer[i].bias[j])
+                        # print(f'h{i}_{j}')
                         f.edge(f'bhx{i-1}', f'h{i}_{j}',
                             str(self.current_layer[i].bias[j]))
 
@@ -85,18 +86,34 @@ class NeuralNetwork:
 
     def back_propagation(self):
         for i in range(len(self.current_layer)):
-            if i != len(self.current_layer) - 1 and i != 0: #Not input or output layer
+            if i != len(self.current_layer) - 1 and i != 0: # Not input or output layer
                 self.current_layer[i].weight = self.current_layer[i].update_weight()
                 self.current_layer[i].bias = self.current_layer[i].update_bias()
             elif i != 0:
                 self.current_layer[i].weight = self.current_layer[i].update_weight_output()
 
-    def learn(self):
+    def learn(self, data):
         error = 0 # placeholder
         current_iter = 0
-        while error > self.threshold and current_iter < self.maximum_iter:
+        target = []
+        result = []
+        print("Lenght curr : ", len(self.current_layer))
+        for index, item in data.iterrows():
+            self.current_layer.insert(0, InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
+            target.append(item['species'])
             self.forward_propagation()
-            self.back_propagation()
+            result.append(self.current_layer[-1].result)
+            self.deque_layer()
+
+            # Learn with bach_size
+            if (index + 1) % self.batch_size == 0:
+                # backpropagation
+
+                # clearing list target foreach batch_size
+                target.clear()
+                result.clear()
+            if error > self.error_threshold and current_iter < self.max_iter:
+                break
         
 class InputLayer:
     def __init__(self, arr=[]):
@@ -159,10 +176,11 @@ def main():
     parameter = read_parameter()
     data = read_data()
     model = read_model()
-    neural_network = NeuralNetwork()
-    result = []
     layer = []
-    target = []
+    learning_rate, error_threshold, max_iter, batch_size = \
+        parameter["learning_rate"], parameter["error_threshold"], parameter["max_iter"], parameter["batch_size"]
+
+    # Create base layer
     print("Activation Layer: ")
     for index, item in model.iterrows():
         act = None
@@ -174,19 +192,20 @@ def main():
             act = relu
         elif (item['activation'] == 'softmax'):
             act = softmax
+
+        # Case for near Input Layer
         if index == 0: layer.append(Layer(NEURON_INPUT, item['neuron'], act, threshold=0.1))
         elif index > 0: layer.append(Layer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
+    
     print("")
-    for index, item in data.iterrows():
-        layer.insert(0, InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
-        target.append(item['species'])
-        neural_network.base_layer = layer
-        neural_network.forward_propagation()
-        result.append(neural_network.current_layer[-1].result)
-        neural_network.deque_layer()
-    print("Target Class \t: ", target)
-    print("Predict Class \t: ", result)
-    print("=================================")
+
+    # Build ANN model from layer and learn process
+    neural_network = NeuralNetwork(layer, learning_rate, error_threshold, max_iter, batch_size)
+    neural_network.learn(data)
+    
+    # print("Target Class \t: ", target)
+    # print("Predict Class \t: ", result)
+    # print("=================================")
     # if (result == target):
     #     print("Result : Good Predict")
     # else:

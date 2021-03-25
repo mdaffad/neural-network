@@ -13,6 +13,7 @@ def read_parameter():
     return parameter
 
 if __name__ == "__main__":
-    print(read_parameter())
+    print(read_parameter()["learning_rate"])
+
     
     
