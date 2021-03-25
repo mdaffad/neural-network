@@ -139,6 +139,11 @@ class Layer(InputLayer):
 
     def update_bias(self, target, out_h, out_o):
         pass
+    
+class OutputLayer(Layer):
+    def __init__(self, arr_weight, arr_bias, activation_function, **kwargs):
+        super().__init__(arr_weight, arr_bias, activation_function, **kwargs)
+        self.error([])
 
 # driver test
 
