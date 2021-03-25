@@ -4,6 +4,8 @@ from activation.activationFunction import linear, sigmoid, relu, softmax
 from parameter_reader import read_parameter
 from csv_reader import read_model, read_data
 import random
+
+NEURON_INPUT = 4
 # For iterating per item in array. Except for linear function because single parameter is automate to iterate per item
 linear = np.vectorize(linear)
 sigmoid = np.vectorize(sigmoid)
@@ -161,7 +163,7 @@ def main():
     neural_network = NeuralNetwork()
     result = []
     layer = []
-
+    target = []
     print("Activation Layer: ")
     for index, item in model.iterrows():
         act = None
@@ -177,8 +179,9 @@ def main():
         layer.append(Layer(item['neuron'], act, threshold=0.1))
         print(layer[-1].input_value)
     print("")
-    for item in data:
-        layer.insert(0, InputLayer(item))
+    for index, item in data.iterrows():
+        layer.insert(0, InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
+        target.append(item['species'])
         neural_network.base_layer = layer
         neural_network.forward_propagation()
         result.append(neural_network.current_layer[-1].result)
