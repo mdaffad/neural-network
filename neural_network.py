@@ -30,7 +30,6 @@ class NeuralNetwork:
 
     def forward_propagation(self):
         self.current_layer = self.base_layer.copy()
-        print(self.current_layer)
         for idx in range(len(self.current_layer)):
             print("")
             print("LAYER === " + str(idx))
@@ -109,10 +108,10 @@ class InputLayer:
 
 from chainRule import *
 class Layer(InputLayer):
-    def __init__(self, neuron, activation_function, **kwargs):
+    def __init__(self, neuron_input, neuron_output, activation_function, **kwargs):
         super().__init__([])
-        self.weight = np.array([[random.random() for x in range(neuron)] for j in range(neuron)])
-        self.bias = np.array([random.random() for x in range(neuron)])
+        self.weight = np.array([[random.random() for x in range(neuron_output)] for j in range(neuron_input)])
+        self.bias = np.array([random.random() for x in range(neuron_output)])
         self.result = np.array([])
         self.activation_function = activation_function
         self.kwargs = kwargs
@@ -175,9 +174,8 @@ def main():
             act = relu
         elif (item['activation'] == 'softmax'):
             act = softmax
-        print(index, " ", item['activation'])
-        layer.append(Layer(item['neuron'], act, threshold=0.1))
-        print(layer[-1].input_value)
+        if index == 0: layer.append(Layer(NEURON_INPUT, item['neuron'], act, threshold=0.1))
+        elif index > 0: layer.append(Layer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
     print("")
     for index, item in data.iterrows():
         layer.insert(0, InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
@@ -186,7 +184,7 @@ def main():
         neural_network.forward_propagation()
         result.append(neural_network.current_layer[-1].result)
         neural_network.deque_layer()
-    # print("Target Class \t: ", target)
+    print("Target Class \t: ", target)
     print("Predict Class \t: ", result)
     print("=================================")
     # if (result == target):
