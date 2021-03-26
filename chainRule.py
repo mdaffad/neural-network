@@ -13,6 +13,8 @@ def chainRuleHidden (arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vecto
         arr = []
         output = chainRuleOutput1(arr_target[j], arr_out_o[j])
         arr.append(output)
+        print("target : ",arr_target)
+        print(arr_hiddenLayer_weight[j])
         result = np.prod(arr) * arr_hiddenLayer_weight[j]
         sum_Output += result
     return sum_Output * out_h * ( 1 - out_h ) * vector_i

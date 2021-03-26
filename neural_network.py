@@ -25,7 +25,7 @@ class NeuralNetwork:
         return len(self.layer)
 
     def enqueue_layer(self, layer):
-        self.current_layer.append(layer)
+        self.current_layer.insert(0, layer)
 
     def deque_layer(self):
         self.current_layer.pop(0)
@@ -83,38 +83,47 @@ class NeuralNetwork:
 
         f.view()
     
-
-    def back_propagation(self):
-        for i in range(len(self.current_layer)):
-            if i != len(self.current_layer) - 1 and i != 0: # Not input or output layer
-                self.current_layer[i].weight = self.current_layer[i].update_weight()
-                self.current_layer[i].bias = self.current_layer[i].update_bias()
-            elif i != 0:
-                self.current_layer[i].weight = self.current_layer[i].update_weight_output()
-
     def learn(self, data):
         error = 0 # placeholder
         current_iter = 0
         target = []
         result = []
         print("Lenght curr : ", len(self.current_layer))
-        for index, item in data.iterrows():
-            self.current_layer.insert(0, InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
-            target.append(item['species'])
-            self.forward_propagation()
-            result.append(self.current_layer[-1].result)
-            self.deque_layer()
+        for _ in range(self.max_iter):
+            for index, item in data.iterrows():
+                # Prepare input
+                self.enqueue_layer(InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
+                # Forward andd result
+                self.forward_propagation()
+                target.append(item['species'])
+                result.append(self.current_layer[-1].result)
+                # cleaning layer
+                self.deque_layer()
 
-            # Learn with bach_size
-            if (index + 1) % self.batch_size == 0:
-                # backpropagation
-
-                # clearing list target foreach batch_size
-                target.clear()
-                result.clear()
-            if error > self.error_threshold and current_iter < self.max_iter:
+                # Learn with bach_size
+                if (index + 1) % self.batch_size == 0 or index == len(data.index):
+                    # backpropagation
+                    self.back_propagation(target, result)
+                    # clearing list target foreach batch_size
+                    target.clear()
+                    result.clear()
+            if error > self.error_threshold or current_iter < self.max_iter:
                 break
-        
+    def back_propagation(self, arr_target, arr_out):
+        for i in range(len(self.current_layer) - 1, -1, -1):
+            if i != len(self.current_layer) - 2 and i > 0: # Not input or output layer
+                for j in range(len(self.current_layer[i].weight)):
+                    for k in range(len(self.current_layer[i].weight[j])):
+                        print("in k range : ", self.current_layer[i].weight)
+                        self.current_layer[i].weight[j][k] = self.current_layer[i].update_weight(arr_target, arr_out, 
+                        self.current_layer[i].weight[j], self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
+                        print(self.current_layer[i].weight[j][k])
+                # for j in range(len(self.current_layer[i].bias)):
+                #     self.current_layer[i].bias = self.current_layer[i].update_bias(arr_target, arr_out, self.current_layer[i].result[j], self.current_layer[i].input_value[j])
+            elif i == len(self.current_layer):
+                self.current_layer[i].weight = self.current_layer[i].update_weight_output(arr_target, arr_out, 
+                        self.current_layer[i].weight, self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
+
 class InputLayer:
     def __init__(self, arr=[]):
         self.input_value = np.array(arr)
@@ -152,13 +161,15 @@ class Layer(InputLayer):
         print("Weight \t: ", self.weight)
         print("Result \t: ", self.result)
     
-    def update_weight(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i):
-        pass
-    
-    def update_weight_output(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i):
-        pass
+    def update_weight(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, learning_rate):
+        return chainRuleHidden(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i) * learning_rate * -1
 
-    def update_bias(self, target, out_h, out_o):
+    
+    def update_weight_output(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, learning_rate):
+        return chainRuleOutput2(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i) * learning_rate * -1
+
+
+    def update_bias(self, arr_target, arr_out_o, out_h, vector_i):
         pass
     
 class OutputLayer(Layer):
@@ -193,9 +204,10 @@ def main():
         elif (item['activation'] == 'softmax'):
             act = softmax
 
-        # Case for near Input Layer
+        # Case for near Input Layer or the Output Layer
         if index == 0: layer.append(Layer(NEURON_INPUT, item['neuron'], act, threshold=0.1))
-        elif index > 0: layer.append(Layer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
+        elif index > 0 and index != len(model.index): layer.append(Layer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
+        elif index == model.index: layer.append(OutputLayer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
     
     print("")
 
