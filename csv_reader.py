@@ -6,6 +6,9 @@ def read_model():
 
 def read_data():
     df = pd.read_csv('iris.csv')
+    df['species'] = df['species'].replace(['setosa'],1)
+    df['species'] = df['species'].replace(['versicolor'],2)
+    df['species'] = df['species'].replace(['virginica'],3)
     # One hot encoding
     y = pd.get_dummies(df.species, prefix='Class')
     print(y.head())

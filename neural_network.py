@@ -105,7 +105,7 @@ class NeuralNetwork:
                 elif self.current_layer[-1].activation_function_name == "softmax":
                     for i in range(len(target)):
                         for j in range(len(target[i])):
-                            print("inside : ", result[i][j])
+                            # print("inside : ", result[i][j])
                             if target[i][j] != result[i][j]:
                                 error += lossSoftmax(result[i][j])
                 print("error : ", error)
@@ -140,7 +140,31 @@ class NeuralNetwork:
             elif i == len(self.current_layer):
                 self.current_layer[i].weight = self.current_layer[i].update_weight_output(arr_target, arr_out, 
                         self.current_layer[i].weight, self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
-            
+
+    def predict(self, data):
+        result = []
+        target = []
+        precise = 0
+        total_data = len(data.index)
+        for index, item in data.iterrows():
+            # Prepare input
+            self.enqueue_layer(InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
+            # Forward andd result
+            self.forward_propagation()
+            target.append([item['Class_1'], item['Class_2'], item['Class_3']])
+            result.append(self.current_layer[-1].result)
+            max_index_col_result = np.argmax(result[-1], axis=0)
+            max_index_col_data = np.argmax(target[-1], axis=0)
+            # print("max data ", max_index_col_data)
+            # print("max index ", max_index_col_result)
+            # print(target)
+            # print(result)
+            if(max_index_col_data == max_index_col_result): precise = precise + 1
+            self.deque_layer()
+        accuracy = 0.0
+        accuracy = float (precise / total_data)
+        print("Accuracy \t: ", accuracy)
+             
 class InputLayer:
     def __init__(self, arr=[]):
         self.input_value = np.array(arr)
@@ -153,8 +177,8 @@ from chainRule import *
 class Layer(InputLayer):
     def __init__(self, neuron_input, neuron_output, activation_function, activation_function_name, **kwargs):
         super().__init__([])
-        self.weight = np.array([[random.random() for x in range(neuron_output)] for j in range(neuron_input)])
-        self.bias = np.array([random.random() for x in range(neuron_output)])
+        self.weight = np.array([[1.5 * (1.0 - random.random()) for x in range(neuron_output)] for j in range(neuron_input)])
+        self.bias = np.array([1.5 * (1.0 - random.random()) for x in range(neuron_output)])
         self.result = np.array([])
         self.activation_function = activation_function
         self.activation_function_name = activation_function_name
@@ -240,7 +264,7 @@ def main():
     #     print("Result : Good Predict")
     # else:
     #     print("Result : Wrong Predict")
-    
+    neural_network.predict(data)
     neural_network.draw()
 
 if __name__ == "__main__":

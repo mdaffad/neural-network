@@ -1,4 +1,4 @@
 neuron,activation
-4,linear
-2,relu
-3,softmax
+2,sigmoid
+1,linear
+3,relu
