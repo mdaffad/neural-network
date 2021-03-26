@@ -58,9 +58,11 @@ def lossFunction(targetj, oj, lenOutput=1):
     loss = 0
     if lenOutput>1:
         for i in range(len(targetj)):
-            loss += (targetj[i]-oj[i]) * (targetj[i]-oj[i])
-    # else:
-    #     loss += (targetj-oj) * (targetj-oj)
+            for j in range(len(targetj[i])):
+                print(targetj[i])
+                loss += (targetj[i][j]-oj[i][j]) ** 2
+    else:
+        loss += (targetj-oj) * (targetj-oj)
     return loss/2
 
 def lossSoftmax(pk):

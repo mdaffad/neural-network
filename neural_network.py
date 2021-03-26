@@ -84,23 +84,26 @@ class NeuralNetwork:
         f.view()
 
     def learn(self, data):
-        error = 0 # placeholder
+         # placeholder
         current_iter = 0
         target = []
         result = []
         print("Lenght curr : ", len(self.current_layer))
         for _ in range(self.max_iter):
+            error = 0.0
             for index, item in data.iterrows():
                 # Prepare input
                 self.enqueue_layer(InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
                 # Forward andd result
                 self.forward_propagation()
                 
-                target.append(item['species'])
+                target.append([item['Class_1'], item['Class_2'], item['Class_3']])
+                print("Target : ", target)
                 result.append(self.current_layer[-1].result)
 
-                error = lossFunction(target, result)
-                if error > self.error_threshold:
+                error += lossFunction(target, result, 3)
+                print("error : ", error)
+                if error < self.error_threshold:
                     break 
 
                 # cleaning layer
@@ -110,9 +113,10 @@ class NeuralNetwork:
                 if (index + 1) % self.batch_size == 0 or index == len(data.index):
                     # backpropagation
                     self.back_propagation(target, result)
-                    # clearing list target foreach batch_size
+                    # clearing list and error foreach batch_size
                     target.clear()
                     result.clear()
+                    error = 0
             
             if current_iter < self.max_iter:
                 break
