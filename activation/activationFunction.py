@@ -47,7 +47,7 @@ def relu(x, kwargs):
         else:
             return min(x, max_value)
 
-def softmax(arr):
+def softmax(arr, kwargs=None):
     arr_exp = np.exp(arr)
     return arr_exp / arr_exp.sum()
 

@@ -1,23 +1,46 @@
 import numpy as np
-
-def chainRuleOutput1 (target, out_o) :
+import activation.activationFunction
+def chainRuleOutputSigmoid (target, out_o) :
     return -( target - out_o ) * out_o * ( 1 - out_o )
-
-def chainRuleOutput2 (target, out_h, out_o) :
-    output = chainRuleOutput1(target, out_o)
+def chainRuleOutputRelu (target, out_o):
+    return -( target - out_o ) * activation.activationFunction.reluDerivative(out_o)
+def chainRuleOutput2 (target, out_h, out_o, method) :
+    output = chainRuleOutputSigmoid(target, out_o)
     return output * out_h
 
-def chainRuleHidden (arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i) :
+def chainRuleHidden (arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, method) :
     sum_Output = 0
-    for j in range(len(arr_target)):
-        arr = []
-        output = chainRuleOutput1(arr_target[j], arr_out_o[j])
-        arr.append(output)
-        # print("target : ",arr_target)
-        # print(arr_hiddenLayer_weight[j])
-        result = np.prod(arr) * arr_hiddenLayer_weight[j]
-        sum_Output += result
-    return sum_Output * out_h * ( 1 - out_h ) * vector_i
+    if method == "sigmoid" or method == "relu":
+        for j in range(len(arr_target)):
+            arr = []
+            output = chainRuleOutputSigmoid(arr_target[j], arr_out_o[j])
+            arr.append(output)
+            # print("target : ",arr_target)
+            # print(arr_hiddenLayer_weight[j])
+            result = np.prod(arr) * arr_hiddenLayer_weight[j]
+            sum_Output += result
+        return sum_Output * out_h * ( 1 - out_h ) * vector_i
+    elif method == "relu":
+        for j in range(len(arr_target)):
+            arr = []
+            output = chainRuleOutputRelu(arr_target[j], arr_out_o[j])
+            arr.append(output)
+            # print("target : ",arr_target)
+            # print(arr_hiddenLayer_weight[j])
+            result = np.prod(arr) * arr_hiddenLayer_weight[j]
+            sum_Output += result
+        return sum_Output * out_h * ( 1 - out_h ) * vector_i
+    elif method == "softmax":
+        for j in range(len(arr_target)):
+            arr = []
+            for k in range(len(arr_target[j])):
+                output = chainSoftMax(arr_target[j][k], arr_out_o[j][k], activation.activationFunction.softmax(arr_out_o[j]), out_h)
+                arr.append(output)
+            # print("target : ",arr_target)
+            # print(arr_hiddenLayer_weight[j])
+            result = np.prod(arr) * arr_hiddenLayer_weight[j]
+            sum_Output += result
+        return sum_Output * vector_i
 
 def chainSoftMax (target, j, probJ, out_h) :
     if (target == j):

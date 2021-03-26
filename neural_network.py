@@ -100,8 +100,14 @@ class NeuralNetwork:
                 target.append([item['Class_1'], item['Class_2'], item['Class_3']])
                 print("Target : ", target)
                 result.append(self.current_layer[-1].result)
-
-                error += lossFunction(target, result, 3)
+                if self.current_layer[-1].activation_function_name == "relu" or self.current_layer[-1].activation_function_name == "sigmoid":
+                    error += lossFunction(target, result, 3)
+                elif self.current_layer[-1].activation_function_name == "softmax":
+                    for i in range(len(target)):
+                        for j in range(len(target[i])):
+                            print("inside : ", result[i][j])
+                            if target[i][j] != result[i][j]:
+                                error += lossSoftmax(result[i][j])
                 print("error : ", error)
                 if error < self.error_threshold:
                     break 
@@ -145,12 +151,13 @@ class InputLayer:
 
 from chainRule import *
 class Layer(InputLayer):
-    def __init__(self, neuron_input, neuron_output, activation_function, **kwargs):
+    def __init__(self, neuron_input, neuron_output, activation_function, activation_function_name, **kwargs):
         super().__init__([])
         self.weight = np.array([[random.random() for x in range(neuron_output)] for j in range(neuron_input)])
         self.bias = np.array([random.random() for x in range(neuron_output)])
         self.result = np.array([])
         self.activation_function = activation_function
+        self.activation_function_name = activation_function_name
         self.kwargs = kwargs
 
     def activate(self):
@@ -173,11 +180,11 @@ class Layer(InputLayer):
         print("Result \t: ", self.result)
     
     def update_weight(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, learning_rate):
-        return chainRuleHidden(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i) * learning_rate * -1
+        return chainRuleHidden(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, self.activation_function_name) * learning_rate * -1
 
     
     def update_weight_output(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, learning_rate):
-        return chainRuleOutput2(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i) * learning_rate * -1
+        return chainRuleOutput2(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, self.activation_function_name) * learning_rate * -1
 
 
     def update_bias(self, arr_target, arr_out_o, out_h, vector_i):
@@ -216,9 +223,9 @@ def main():
             act = softmax
 
         # Case for near Input Layer or the Output Layer
-        if index == 0: layer.append(Layer(NEURON_INPUT, item['neuron'], act, threshold=0.1))
-        elif index > 0 and index != len(model.index): layer.append(Layer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
-        elif index == model.index: layer.append(OutputLayer(model.iloc[index - 1, 0], item['neuron'], act, threshold=0.1))
+        if index == 0: layer.append(Layer(NEURON_INPUT, item['neuron'], act, item['activation'], threshold=0.1))
+        elif index > 0 and index != len(model.index): layer.append(Layer(model.iloc[index - 1, 0], item['neuron'], act, item['activation'], threshold=0.1))
+        elif index == model.index: layer.append(OutputLayer(model.iloc[index - 1, 0], item['neuron'], act, item['activation'], threshold=0.1))
     
     print("")
 
