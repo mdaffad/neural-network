@@ -4,7 +4,7 @@ from activation.activationFunction import linear, sigmoid, relu, softmax
 from parameter_reader import read_parameter
 from csv_reader import read_model, read_data
 import random
-
+from activation.activationFunction import *
 NEURON_INPUT = 4
 # For iterating per item in array. Except for linear function because single parameter is automate to iterate per item
 linear = np.vectorize(linear)
@@ -37,7 +37,7 @@ class NeuralNetwork:
             if idx != 0:
                 self.current_layer[idx].input_value = self.current_layer[idx-1].result
             else:
-                print(type(self.current_layer[idx].input_value))
+                # print(type(self.current_layer[idx].input_value))
                 print("Input layer \t:", self.current_layer[idx].input_value)
             self.current_layer[idx].compute()
 
@@ -82,7 +82,7 @@ class NeuralNetwork:
                             str(self.current_layer[i].bias[j]))
 
         f.view()
-    
+
     def learn(self, data):
         error = 0 # placeholder
         current_iter = 0
@@ -95,8 +95,14 @@ class NeuralNetwork:
                 self.enqueue_layer(InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
                 # Forward andd result
                 self.forward_propagation()
+                
                 target.append(item['species'])
                 result.append(self.current_layer[-1].result)
+
+                error = lossFunction(target, result)
+                if error > self.error_threshold:
+                    break 
+
                 # cleaning layer
                 self.deque_layer()
 
@@ -107,23 +113,24 @@ class NeuralNetwork:
                     # clearing list target foreach batch_size
                     target.clear()
                     result.clear()
-            if error > self.error_threshold or current_iter < self.max_iter:
+            
+            if current_iter < self.max_iter:
                 break
     def back_propagation(self, arr_target, arr_out):
         for i in range(len(self.current_layer) - 1, -1, -1):
             if i != len(self.current_layer) - 2 and i > 0: # Not input or output layer
                 for j in range(len(self.current_layer[i].weight)):
                     for k in range(len(self.current_layer[i].weight[j])):
-                        print("in k range : ", self.current_layer[i].weight)
+                        # print("in k range : ", self.current_layer[i].weight)
                         self.current_layer[i].weight[j][k] = self.current_layer[i].update_weight(arr_target, arr_out, 
                         self.current_layer[i].weight[j], self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
-                        print(self.current_layer[i].weight[j][k])
+                        # print(self.current_layer[i].weight[j][k])
                 # for j in range(len(self.current_layer[i].bias)):
                 #     self.current_layer[i].bias = self.current_layer[i].update_bias(arr_target, arr_out, self.current_layer[i].result[j], self.current_layer[i].input_value[j])
             elif i == len(self.current_layer):
                 self.current_layer[i].weight = self.current_layer[i].update_weight_output(arr_target, arr_out, 
                         self.current_layer[i].weight, self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
-
+            
 class InputLayer:
     def __init__(self, arr=[]):
         self.input_value = np.array(arr)
