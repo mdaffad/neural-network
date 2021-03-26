@@ -135,8 +135,9 @@ class NeuralNetwork:
                         self.current_layer[i].weight[j][k] = self.current_layer[i].update_weight(arr_target, arr_out, 
                         self.current_layer[i].weight[j], self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
                         # print(self.current_layer[i].weight[j][k])
-                # for j in range(len(self.current_layer[i].bias)):
-                #     self.current_layer[i].bias = self.current_layer[i].update_bias(arr_target, arr_out, self.current_layer[i].result[j], self.current_layer[i].input_value[j])
+                for j in range(len(self.current_layer[i].bias)):
+                    self.current_layer[i].bias = self.current_layer[i].update_bias(arr_target, arr_out, 
+                    self.current_layer[i].bias, self.current_layer[i].result[j], np.array([1 for x in range(len(self.current_layer[i].bias))]), self.learning_rate)
             elif i == len(self.current_layer):
                 self.current_layer[i].weight = self.current_layer[i].update_weight_output(arr_target, arr_out, 
                         self.current_layer[i].weight, self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
@@ -211,8 +212,8 @@ class Layer(InputLayer):
         return chainRuleOutput2(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, self.activation_function_name) * learning_rate * -1
 
 
-    def update_bias(self, arr_target, arr_out_o, out_h, vector_i):
-        pass
+    def update_bias(self, arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, learning_rate):
+        return chainRuleHidden(arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, self.activation_function_name) * learning_rate * -1
     
 class OutputLayer(Layer):
     def __init__(self, neuron, activation_function, **kwargs):
