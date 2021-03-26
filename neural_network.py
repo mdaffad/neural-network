@@ -100,7 +100,7 @@ class NeuralNetwork:
                 target.append([item['Class_1'], item['Class_2'], item['Class_3']])
                 print("Target : ", target)
                 result.append(self.current_layer[-1].result)
-                if self.current_layer[-1].activation_function_name == "relu" or self.current_layer[-1].activation_function_name == "sigmoid":
+                if self.current_layer[-1].activation_function_name == "relu" or self.current_layer[-1].activation_function_name == "sigmoid"  or self.current_layer[-1].activation_function_name == "linear":
                     error += lossFunction(target, result, 3)
                 elif self.current_layer[-1].activation_function_name == "softmax":
                     for i in range(len(target)):
@@ -131,10 +131,8 @@ class NeuralNetwork:
             if i != len(self.current_layer) - 2 and i > 0: # Not input or output layer
                 for j in range(len(self.current_layer[i].weight)):
                     for k in range(len(self.current_layer[i].weight[j])):
-                        # print("in k range : ", self.current_layer[i].weight)
                         self.current_layer[i].weight[j][k] = self.current_layer[i].update_weight(arr_target, arr_out, 
                         self.current_layer[i].weight[j], self.current_layer[i].result[j], self.current_layer[i].input_value[j], self.learning_rate)
-                        # print(self.current_layer[i].weight[j][k])
                 for j in range(len(self.current_layer[i].bias)):
                     self.current_layer[i].bias = self.current_layer[i].update_bias(arr_target, arr_out, 
                     self.current_layer[i].bias, self.current_layer[i].result[j], np.array([1 for x in range(len(self.current_layer[i].bias))]), self.learning_rate)
@@ -150,16 +148,13 @@ class NeuralNetwork:
         for index, item in data.iterrows():
             # Prepare input
             self.enqueue_layer(InputLayer([item['sepal_length'], item['sepal_width'], item['petal_length'], item['petal_width']]))
+            
             # Forward andd result
             self.forward_propagation()
             target.append([item['Class_1'], item['Class_2'], item['Class_3']])
             result.append(self.current_layer[-1].result)
             max_index_col_result = np.argmax(result[-1], axis=0)
             max_index_col_data = np.argmax(target[-1], axis=0)
-            # print("max data ", max_index_col_data)
-            # print("max index ", max_index_col_result)
-            # print(target)
-            # print(result)
             if(max_index_col_data == max_index_col_result): precise = precise + 1
             self.deque_layer()
         accuracy = 0.0
