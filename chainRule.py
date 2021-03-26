@@ -10,10 +10,20 @@ def chainRuleOutput2 (target, out_h, out_o, method) :
 
 def chainRuleHidden (arr_target, arr_out_o, arr_hiddenLayer_weight, out_h, vector_i, method) :
     sum_Output = 0
-    if method == "sigmoid" or method == "relu":
+    if method == "sigmoid":
         for j in range(len(arr_target)):
             arr = []
             output = chainRuleOutputSigmoid(arr_target[j], arr_out_o[j])
+            arr.append(output)
+            # print("target : ",arr_target)
+            # print(arr_hiddenLayer_weight[j])
+            result = np.prod(arr) * arr_hiddenLayer_weight[j]
+            sum_Output += result
+        return sum_Output * out_h * ( 1 - out_h ) * vector_i
+    elif method == "relu":
+        for j in range(len(arr_target)):
+            arr = []
+            output = 1
             arr.append(output)
             # print("target : ",arr_target)
             # print(arr_hiddenLayer_weight[j])
