@@ -1,4 +1,4 @@
 neuron,activation
+3,sigmoid
 2,sigmoid
-1,linear
-3,relu
+3,sigmoid

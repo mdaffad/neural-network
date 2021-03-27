@@ -1,6 +1,6 @@
 { 
     "learning_rate": 0.001, 
     "error_threshold":0.001, 
-    "max_iter": 1000,
+    "max_iter": 1,
     "batch_size" : 2
 }
